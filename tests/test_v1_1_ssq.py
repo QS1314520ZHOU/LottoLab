@@ -116,14 +116,26 @@ def test_revision_conflict_not_overwrite(tmp_path):
         assert conf["b_blue"] == "9" and conf["a_blue"] == "7"
 
 
-# ---------- 报告来源分标与一致性 ----------
+# ---------- 报告来源分标与一致性（自包含：临时库双来源夹具） ----------
 
-def test_report_source_split_consistency():
-    rep = report_database(CFG)
-    with db.connect(CFG.db_path) as c:
-        n = c.execute("SELECT COUNT(*) c FROM draws").fetchone()["c"]
-    assert rep["total_rows"] == n == (
+def test_report_source_split_consistency(tmp_path):
+    dbp = tmp_path / "split.db"
+    db.migrate(dbp)
+    with db.connect(dbp) as c:
+        # 官方段3期 + 非官方补齐段2期
+        for i in range(1, 4):
+            db.upsert_draw(c, f"209900{i}", None, [1, 2, 3, 4, 5, 6], 7,
+                           "cwl_official")
+        for i in range(4, 6):
+            db.upsert_draw(c, f"209900{i}", None, [7, 8, 9, 10, 11, 12], 8,
+                           "chart500_backup")
+    from dataclasses import replace
+    cfg2 = replace(CFG, db_path=dbp)
+    rep = report_database(cfg2)
+    n = 5
+    assert rep["total_rows"] == n
+    assert rep["official_rows"] == 3 and rep["nonofficial_rows"] == 2
+    assert sum(rep["by_source"].values()) == n == (
         rep["official_rows"] + rep["nonofficial_rows"])
-    assert sum(rep["by_source"].values()) == n
-    # 本工作区数据：官方段与非官方补齐段必须分别可计数
-    assert rep["official_rows"] > 0 and rep["nonofficial_rows"] > 0
+    assert rep["by_source"]["cwl_official"] == 3
+    assert rep["by_source"]["chart500_backup"] == 2

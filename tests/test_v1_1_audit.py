@@ -82,27 +82,31 @@ def test_bb_conclusion_sentence():
 
 
 def test_ssq_conclusion_sentence(tmp_path):
+    """自包含：模拟数据临时库跑迷你回测，断言标准结论句（不依赖真实ssq.db）。"""
+    import random
+    from dataclasses import replace
+
+    from app import db as adb
     from app.backtest import run_backtest
     from app.config import load_config as ssq_load
-    from dataclasses import replace
-    from app import db as adb
+
+    rng = random.Random(11)
+    rows = []
+    for i in range(1, 261):
+        reds = sorted(rng.sample(range(1, 34), 6))
+        rows.append({
+            "issue": f"2098{i:04d}", "draw_date": f"2098-01-{(i % 28) + 1:02d}",
+            "red": reds, "blue": rng.randint(1, 16),
+            "source": "simulated"})
     ssq = replace(ssq_load(), db_path=tmp_path / "conc.db")
     adb.migrate(ssq.db_path)
-    # 用真实数据导入一小段？直接用真实库读结论更快：重跑一次真实回测代价高，
-    # 这里以已生成的最近一次 run 断言（reports 已含结论），真实库回测刚运行过。
-    real = ssq_load()
-    with adb.connect(real.db_path) as conn:
+    with adb.connect(ssq.db_path) as c:
+        adb.insert_draws_batch(c, rows)
+    out = run_backtest(ssq, min_train=100, max_targets=80)
+    assert "走期回测" in out and "未发现可靠优势" in out
+    with adb.connect(ssq.db_path) as conn:
         row = conn.execute(
             "SELECT summary FROM backtest_runs ORDER BY id DESC LIMIT 1"
         ).fetchone()
-    assert row and row["summary"]
     summary = json.loads(row["summary"])
-    concl = summary["_meta"].get("conclusion", "")
-    assert concl
-    ho = summary.get("holdout") or {}
-    fair = summary["_meta"]["fair"]
-    beat = [m for m in ("B", "C", "D", "ens")
-            if m in ho and ho[m]["brier"] < fair["brier"]
-            and ho[m]["top1_ci"][0] > fair["top1_hit"]]
-    if not beat:
-        assert "未发现可靠优势" in concl
+    assert "未发现可靠优势" in summary["_meta"].get("conclusion", "")
