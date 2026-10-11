@@ -57,5 +57,8 @@ jobs:
           python -m bb_analysis import
           python -m bb_analysis backtest
 
+      - name: Prepare SSQ fixture（离线模拟库+迷你回测，不联网）
+        run: python scripts/ci_prepare_ssq.py
+
       - name: Run tests（真实测试套件）
         run: python -m pytest tests/ -q
