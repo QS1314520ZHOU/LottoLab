@@ -1,0 +1,18 @@
+.env
+*.pyc
+__pycache__/
+.pytest_cache/
+reference/
+data/*.db
+data/*.db-journal
+data/*.db-wal
+data/*.db-shm
+.playwright-cli/
+*.log
+
+# 凭据与本地杂物（禁止入库）
+cookie.txt
+新建 文本文档.txt
+
+# 本地训练的模型状态（体积大且版本易失配，见 docs/IOI_LOTTOLAB_REVIEW.md）
+models/*.joblib

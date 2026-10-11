@@ -1,0 +1,28 @@
+{
+  "windows": [5, 10, 20, 30, 50, 100],
+  "seed": 42,
+  "db_path": "data/bb_analysis.db",
+  "rules": {
+    "regular_count": 6,
+    "special_count": 1,
+    "numbers_can_repeat_within_draw": false,
+    "repeat_rule_source": "观测：data/bb_live_history.csv 全部251期均为7个互异号码；如平台规则不同请修改本项",
+    "combo_win_rule": "all_zodiacs_present",
+    "combo_win_rule_note": "所选全部生肖都至少出现于7个号码中；平台如另有规则请替换 rules.py 中的判定函数"
+  },
+  "backtest": {
+    "min_train": 60,
+    "test_ratio": 0.3,
+    "models": ["A", "B", "C", "D"],
+    "combo_models": ["A", "B", "C"],
+    "persist_feature_scopes": "singles",
+    "max_combos_per_k": 0
+  },
+  "prior_strength": 20.0,
+  "bankroll": {
+    "initial_balance": 200.0,
+    "base_stake": 5.0,
+    "mc_sims": 2000,
+    "max_consecutive_losses": null
+  }
+}

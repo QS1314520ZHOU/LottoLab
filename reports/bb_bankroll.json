@@ -1,0 +1,48 @@
+{
+  "rows": [
+    {
+      "initial": 100.0,
+      "strategy": "FixedStake",
+      "net": -3.6999999999999726,
+      "mdd": 79.20000000000005,
+      "ruin_at": null
+    },
+    {
+      "initial": 100.0,
+      "strategy": "ThreePeriod",
+      "net": -99.8,
+      "mdd": 94.80000000000003,
+      "ruin_at": 65
+    },
+    {
+      "initial": 200.0,
+      "strategy": "FixedStake",
+      "net": -3.6999999999999726,
+      "mdd": 79.19999999999982,
+      "ruin_at": null
+    },
+    {
+      "initial": 200.0,
+      "strategy": "ThreePeriod",
+      "net": -7.2999999999999705,
+      "mdd": 98.09999999999984,
+      "ruin_at": null
+    },
+    {
+      "initial": 500.0,
+      "strategy": "FixedStake",
+      "net": -3.6999999999999726,
+      "mdd": 79.19999999999976,
+      "ruin_at": null
+    },
+    {
+      "initial": 500.0,
+      "strategy": "ThreePeriod",
+      "net": -7.2999999999999705,
+      "mdd": 98.09999999999962,
+      "ruin_at": null
+    }
+  ],
+  "path_len": 121,
+  "hit_rate": 0.5041322314049587
+}

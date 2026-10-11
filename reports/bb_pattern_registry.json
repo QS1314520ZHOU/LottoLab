@@ -1,0 +1,1031 @@
+{
+  "generated": "bb_analysis.patterns.run_registry",
+  "n_patterns": 15,
+  "bh_denominator": 12,
+  "segments": {
+    "warmup": 50,
+    "dev_end": 210,
+    "holdout": [
+      210,
+      251
+    ]
+  },
+  "results": [
+    {
+      "pid": "hot10",
+      "name": "热10肖",
+      "category": "热冷",
+      "definition": "最近10期全开出现次数最多的肖（平手取小序）",
+      "inputs": "presence[:t] 窗口10",
+      "method": "argmax 计数；每期必选",
+      "target": "全开一肖",
+      "baseline_desc": "theory.single_prob(肖号码数) 平均",
+      "scope": "BB一肖@真实赔率",
+      "source": "human",
+      "segment": "dev",
+      "n": 160,
+      "hits": 67,
+      "baseline": 0.4783961884938991,
+      "observed": 0.41875,
+      "diff": -0.05964618849389908,
+      "ci_lo": 0.3450865506167644,
+      "ci_hi": 0.49622359283886586,
+      "z": -1.5118808891006073,
+      "p_value": 0.9347179166998096,
+      "p_adjusted": 0.9347179166998097,
+      "ev_theory": -0.028005074115677663,
+      "holdout_obs": 0.6341463414634146,
+      "holdout_p": 0.019798939722676323,
+      "status": "rejected",
+      "notes": "holdout n=41 hits=26",
+      "extra": {
+        "first_picks": [
+          "虎",
+          "兔",
+          "兔",
+          "兔",
+          "兔",
+          "鼠",
+          "鼠",
+          "鼠"
+        ],
+        "holdout_n": 41,
+        "holdout_hits": 26
+      }
+    },
+    {
+      "pid": "cold30",
+      "name": "冷30回补",
+      "category": "遗漏",
+      "definition": "最近30期出现最少且缺席最久的肖（回补假设，待检验）",
+      "inputs": "presence[:t] 窗口30",
+      "method": "argmin 计数+最久缺席；每期必选",
+      "target": "全开一肖",
+      "baseline_desc": "同上",
+      "scope": "BB一肖@真实赔率",
+      "source": "human",
+      "segment": "dev",
+      "n": 160,
+      "hits": 75,
+      "baseline": 0.47171930751949265,
+      "observed": 0.46875,
+      "diff": -0.0029693075194926477,
+      "ci_lo": 0.39306676250273337,
+      "ci_hi": 0.5458986772878935,
+      "z": -0.07523864646430621,
+      "p_value": 0.5299875819759056,
+      "p_adjusted": 0.5941516882228207,
+      "ev_theory": -0.02825822650984533,
+      "holdout_obs": 0.4878048780487805,
+      "holdout_p": 0.4384342447321864,
+      "status": "rejected",
+      "notes": "holdout n=41 hits=20",
+      "extra": {
+        "first_picks": [
+          "鸡",
+          "鸡",
+          "鸡",
+          "猴",
+          "鸡",
+          "鸡",
+          "虎",
+          "牛"
+        ],
+        "holdout_n": 41,
+        "holdout_hits": 20
+      }
+    },
+    {
+      "pid": "streak3",
+      "name": "长龙跟随",
+      "category": "连断",
+      "definition": "上期特肖在近3期特肖中出现≥2次则追该肖，否则弃权",
+      "inputs": "special_idx[:t]",
+      "method": "条件触发；否则不押",
+      "target": "全开一肖",
+      "baseline_desc": "同上（触发子集）",
+      "scope": "BB一肖@真实赔率",
+      "source": "human",
+      "segment": "dev",
+      "n": 30,
+      "hits": 17,
+      "baseline": 0.4717193075194926,
+      "observed": 0.5666666666666667,
+      "diff": 0.09494735914717406,
+      "ci_lo": 0.3919700954540873,
+      "ci_hi": 0.7262276256938489,
+      "z": 1.0417639430627827,
+      "p_value": 0.14876056747475208,
+      "p_adjusted": 0.44628170242425624,
+      "ev_theory": -0.02825822650984533,
+      "holdout_obs": 0.5,
+      "holdout_p": 0.43634747804342333,
+      "status": "exploratory",
+      "notes": "holdout n=8 hits=4",
+      "extra": {
+        "first_picks": [
+          "牛",
+          "羊",
+          "虎",
+          "蛇",
+          "狗",
+          "狗",
+          "狗",
+          "蛇"
+        ],
+        "holdout_n": 8,
+        "holdout_hits": 4
+      }
+    },
+    {
+      "pid": "chong",
+      "name": "特肖对冲",
+      "category": "转移",
+      "definition": "上期特肖的地支对冲肖",
+      "inputs": "special_idx[t-1]",
+      "method": "查表对冲；每期必选",
+      "target": "全开一肖",
+      "baseline_desc": "同上",
+      "scope": "BB一肖@真实赔率",
+      "source": "human",
+      "segment": "dev",
+      "n": 160,
+      "hits": 78,
+      "baseline": 0.47890979472269957,
+      "observed": 0.4875,
+      "diff": 0.008590205277300422,
+      "ci_lo": 0.41125433004043505,
+      "ci_hi": 0.5643318458758158,
+      "z": 0.21774585431776403,
+      "p_value": 0.413813567094816,
+      "p_adjusted": 0.5941516882228207,
+      "ev_theory": -0.027985600854587844,
+      "holdout_obs": 0.5121951219512195,
+      "holdout_p": 0.357500988226645,
+      "status": "exploratory",
+      "notes": "holdout n=41 hits=21",
+      "extra": {
+        "first_picks": [
+          "羊",
+          "牛",
+          "羊",
+          "牛",
+          "虎",
+          "鼠",
+          "马",
+          "虎"
+        ],
+        "holdout_n": 41,
+        "holdout_hits": 21
+      }
+    },
+    {
+      "pid": "p1_z",
+      "name": "平1生肖",
+      "category": "平特",
+      "definition": "上期第一平码所在生肖",
+      "inputs": "p1_idx[t-1]",
+      "method": "直接取肖；每期必选",
+      "target": "全开一肖",
+      "baseline_desc": "同上",
+      "scope": "BB一肖@真实赔率",
+      "source": "prior_work",
+      "segment": "dev",
+      "n": 160,
+      "hits": 77,
+      "baseline": 0.48147782586670207,
+      "observed": 0.48125,
+      "diff": -0.0002278258667020583,
+      "ci_lo": 0.4051800943622811,
+      "ci_hi": 0.558199169512095,
+      "z": -0.005775728295380235,
+      "p_value": 0.5023041694063187,
+      "p_adjusted": 0.5941516882228207,
+      "ev_theory": -0.027888234549138746,
+      "holdout_obs": 0.4634146341463415,
+      "holdout_p": 0.5627608312100736,
+      "status": "rejected",
+      "notes": "holdout n=41 hits=19",
+      "extra": {
+        "first_picks": [
+          "牛",
+          "鼠",
+          "马",
+          "鸡",
+          "虎",
+          "鼠",
+          "兔",
+          "马"
+        ],
+        "holdout_n": 41,
+        "holdout_hits": 19
+      }
+    },
+    {
+      "pid": "p1_plus1",
+      "name": "平1生肖+1",
+      "category": "平特",
+      "definition": "上期第一平码生肖顺移1位",
+      "inputs": "p1_idx[t-1]",
+      "method": "(idx+1)%12；每期必选",
+      "target": "全开一肖",
+      "baseline_desc": "同上",
+      "scope": "BB一肖@真实赔率",
+      "source": "prior_work",
+      "segment": "dev",
+      "n": 160,
+      "hits": 80,
+      "baseline": 0.47942340095150004,
+      "observed": 0.5,
+      "diff": 0.020576599048499955,
+      "ci_lo": 0.42343787383759396,
+      "ci_hi": 0.576562126162406,
+      "z": 0.5215925996884271,
+      "p_value": 0.30097700846666164,
+      "p_adjusted": 0.5941516882228207,
+      "ev_theory": -0.027966127593498025,
+      "holdout_obs": 0.4878048780487805,
+      "holdout_p": 0.4384342447321864,
+      "status": "exploratory",
+      "notes": "holdout n=41 hits=20",
+      "extra": {
+        "first_picks": [
+          "虎",
+          "牛",
+          "羊",
+          "狗",
+          "兔",
+          "牛",
+          "龙",
+          "羊"
+        ],
+        "holdout_n": 41,
+        "holdout_hits": 20
+      }
+    },
+    {
+      "pid": "p1_minus1",
+      "name": "平1生肖-1",
+      "category": "平特",
+      "definition": "上期第一平码生肖逆移1位",
+      "inputs": "p1_idx[t-1]",
+      "method": "(idx-1)%12；每期必选",
+      "target": "全开一肖",
+      "baseline_desc": "同上",
+      "scope": "BB一肖@真实赔率",
+      "source": "prior_work",
+      "segment": "dev",
+      "n": 160,
+      "hits": 85,
+      "baseline": 0.47839618849389903,
+      "observed": 0.53125,
+      "diff": 0.05285381150610097,
+      "ci_lo": 0.45410132271210635,
+      "ci_hi": 0.6069332374972666,
+      "z": 1.3397112129029611,
+      "p_value": 0.09016962535051132,
+      "p_adjusted": 0.44628170242425624,
+      "ev_theory": -0.028005074115677663,
+      "holdout_obs": 0.34146341463414637,
+      "holdout_p": 0.9619957952701488,
+      "status": "exploratory",
+      "notes": "holdout n=41 hits=14",
+      "extra": {
+        "first_picks": [
+          "鼠",
+          "猪",
+          "蛇",
+          "猴",
+          "牛",
+          "猪",
+          "虎",
+          "蛇"
+        ],
+        "holdout_n": 41,
+        "holdout_hits": 14
+      }
+    },
+    {
+      "pid": "sp_plus1",
+      "name": "特码+1",
+      "category": "位移",
+      "definition": "上期特码号码+1（49回绕）所在生肖",
+      "inputs": "sp_num[t-1]",
+      "method": "wrap49(n+1)→肖；每期必选",
+      "target": "全开一肖",
+      "baseline_desc": "同上",
+      "scope": "BB一肖@真实赔率",
+      "source": "prior_work",
+      "segment": "dev",
+      "n": 160,
+      "hits": 90,
+      "baseline": 0.4799370071803005,
+      "observed": 0.5625,
+      "diff": 0.08256299281969948,
+      "ci_lo": 0.48505879638054433,
+      "ci_hi": 0.6370103240382016,
+      "z": 2.0929301134594254,
+      "p_value": 0.018177696810380617,
+      "p_adjusted": 0.2181323617245674,
+      "ev_theory": -0.027946654332408206,
+      "holdout_obs": 0.5121951219512195,
+      "holdout_p": 0.367132828621224,
+      "status": "exploratory",
+      "notes": "holdout n=41 hits=21",
+      "extra": {
+        "first_picks": [
+          "鼠",
+          "马",
+          "鼠",
+          "马",
+          "羊",
+          "马",
+          "猪",
+          "羊"
+        ],
+        "holdout_n": 41,
+        "holdout_hits": 21
+      }
+    },
+    {
+      "pid": "sp_minus1",
+      "name": "特码-1",
+      "category": "位移",
+      "definition": "上期特码号码-1（回绕）所在生肖",
+      "inputs": "sp_num[t-1]",
+      "method": "wrap49(n-1)→肖；每期必选",
+      "target": "全开一肖",
+      "baseline_desc": "同上",
+      "scope": "BB一肖@真实赔率",
+      "source": "prior_work",
+      "segment": "dev",
+      "n": 160,
+      "hits": 76,
+      "baseline": 0.4794234009515,
+      "observed": 0.475,
+      "diff": -0.004423400951500012,
+      "ci_lo": 0.39911756557967737,
+      "ci_hi": 0.5520547862528241,
+      "z": -0.11212801475690538,
+      "p_value": 0.5446390475375856,
+      "p_adjusted": 0.5941516882228207,
+      "ev_theory": -0.027966127593498025,
+      "holdout_obs": 0.3902439024390244,
+      "holdout_p": 0.8578897812968931,
+      "status": "rejected",
+      "notes": "holdout n=41 hits=16",
+      "extra": {
+        "first_picks": [
+          "虎",
+          "猴",
+          "虎",
+          "猴",
+          "鸡",
+          "羊",
+          "牛",
+          "鸡"
+        ],
+        "holdout_n": 41,
+        "holdout_hits": 16
+      }
+    },
+    {
+      "pid": "markov_sp",
+      "name": "特肖Markov",
+      "category": "自动发现",
+      "definition": "上期特肖条件下下期特肖最大频转移（支持度≥15）",
+      "inputs": "special_idx[:t]",
+      "method": "条件计数 argmax；不足弃权",
+      "target": "全开一肖",
+      "baseline_desc": "同上（触发子集）",
+      "scope": "BB一肖@真实赔率",
+      "source": "auto",
+      "segment": "dev",
+      "n": 33,
+      "hits": 19,
+      "baseline": 0.47171930751949254,
+      "observed": 0.5757575757575758,
+      "diff": 0.10403826823808326,
+      "ci_lo": 0.4080697369146003,
+      "ci_hi": 0.7276464100497011,
+      "z": 1.1972253089688607,
+      "p_value": 0.11560937384276015,
+      "p_adjusted": 0.44628170242425624,
+      "ev_theory": -0.02825822650984533,
+      "holdout_obs": 0.5405405405405406,
+      "holdout_p": 0.21633170273341173,
+      "status": "exploratory",
+      "notes": "holdout n=37 hits=20",
+      "extra": {
+        "first_picks": [
+          "狗",
+          "狗",
+          "狗",
+          "狗",
+          "狗",
+          "虎",
+          "虎",
+          "狗"
+        ],
+        "holdout_n": 37,
+        "holdout_hits": 20
+      }
+    },
+    {
+      "pid": "same_pingte",
+      "name": "平特同期关系",
+      "category": "平特",
+      "definition": "特码生肖同时出现在6正码中的频率 vs 超几何条件基线",
+      "inputs": "draws 全期（描述性，不可用于当期预测）",
+      "method": "条件超几何基线 + 正态近似检验",
+      "target": "同期关系",
+      "baseline_desc": "1 - C(48-(size-1),6)/C(48,6)",
+      "scope": "开奖结构描述（含泄漏红线说明）",
+      "source": "auto",
+      "segment": "full",
+      "n": 251,
+      "hits": 77,
+      "baseline": 0.3429617945117484,
+      "observed": 0.30677290836653387,
+      "diff": -0.03618888614521454,
+      "ci_lo": NaN,
+      "ci_hi": NaN,
+      "z": -1.2077968528932403,
+      "p_value": 0.2271254123209363,
+      "p_adjusted": 0.5451009895702471,
+      "ev_theory": null,
+      "holdout_obs": null,
+      "holdout_p": null,
+      "status": "rejected",
+      "notes": "同期结构描述；预测特码时不得使用当期正码；未过BH→保留失败记录",
+      "extra": {}
+    },
+    {
+      "pid": "sp_transition",
+      "name": "特肖转移独立性",
+      "category": "自动发现",
+      "definition": "特码生肖12×12转移矩阵卡方独立性检验",
+      "inputs": "special_idx 序列",
+      "method": "chi2_contingency",
+      "target": "同期关系→跨期检验",
+      "baseline_desc": "转移独立（uniform）",
+      "scope": "全期",
+      "source": "auto",
+      "segment": "full",
+      "n": 250,
+      "hits": null,
+      "baseline": null,
+      "observed": null,
+      "diff": null,
+      "ci_lo": null,
+      "ci_hi": null,
+      "z": null,
+      "p_value": 0.39458183673520514,
+      "p_adjusted": 0.5941516882228207,
+      "ev_theory": null,
+      "holdout_obs": null,
+      "holdout_p": null,
+      "status": "rejected",
+      "notes": "chi2=124.5 dof=121；未过BH→保留失败记录",
+      "extra": {
+        "chi2": 124.52810950272928,
+        "dof": 121,
+        "p": 0.39458183673520514,
+        "n": 250
+      }
+    },
+    {
+      "pid": "hotcold_table",
+      "name": "热冷多窗口计数表",
+      "category": "热冷",
+      "definition": "窗口10/20/50的全开出现次数 vs 理论期望",
+      "inputs": "presence 全期",
+      "method": "描述统计",
+      "target": "描述",
+      "baseline_desc": "不适用（描述性）",
+      "scope": "历史描述",
+      "source": "auto",
+      "segment": "descriptive",
+      "n": 0,
+      "hits": null,
+      "baseline": null,
+      "observed": null,
+      "diff": null,
+      "ci_lo": null,
+      "ci_hi": null,
+      "z": null,
+      "p_value": null,
+      "p_adjusted": null,
+      "ev_theory": null,
+      "holdout_obs": null,
+      "holdout_p": null,
+      "status": "descriptive",
+      "notes": "",
+      "extra": {
+        "w10": {
+          "鼠": 9,
+          "牛": 7,
+          "虎": 6,
+          "兔": 1,
+          "龙": 4,
+          "蛇": 6,
+          "马": 6,
+          "羊": 5,
+          "猴": 5,
+          "鸡": 4,
+          "狗": 5,
+          "猪": 3
+        },
+        "w20": {
+          "鼠": 18,
+          "牛": 11,
+          "虎": 9,
+          "兔": 6,
+          "龙": 10,
+          "蛇": 13,
+          "马": 9,
+          "羊": 12,
+          "猴": 11,
+          "鸡": 8,
+          "狗": 8,
+          "猪": 6
+        },
+        "w50": {
+          "鼠": 32,
+          "牛": 29,
+          "虎": 19,
+          "兔": 19,
+          "龙": 25,
+          "蛇": 23,
+          "马": 27,
+          "羊": 26,
+          "猴": 30,
+          "鸡": 25,
+          "狗": 25,
+          "猪": 18
+        },
+        "theory_per_window": {
+          "鼠": 23.59,
+          "牛": 23.59,
+          "虎": 23.59,
+          "兔": 23.59,
+          "龙": 23.59,
+          "蛇": 23.59,
+          "马": 27.69,
+          "羊": 23.59,
+          "猴": 23.59,
+          "鸡": 23.59,
+          "狗": 23.59,
+          "猪": 23.59
+        }
+      }
+    },
+    {
+      "pid": "omission_rank",
+      "name": "当前遗漏排名",
+      "category": "遗漏",
+      "definition": "距上次全开出现的期数",
+      "inputs": "presence 全期",
+      "method": "描述统计",
+      "target": "描述",
+      "baseline_desc": "不适用（描述性）",
+      "scope": "历史描述",
+      "source": "auto",
+      "segment": "descriptive",
+      "n": 0,
+      "hits": null,
+      "baseline": null,
+      "observed": null,
+      "diff": null,
+      "ci_lo": null,
+      "ci_hi": null,
+      "z": null,
+      "p_value": null,
+      "p_adjusted": null,
+      "ev_theory": null,
+      "holdout_obs": null,
+      "holdout_p": null,
+      "status": "descriptive",
+      "notes": "",
+      "extra": {
+        "兔": 8,
+        "猪": 3,
+        "猴": 2,
+        "鸡": 2,
+        "虎": 1,
+        "龙": 1,
+        "羊": 1,
+        "狗": 1,
+        "鼠": 0,
+        "牛": 0,
+        "蛇": 0,
+        "马": 0
+      }
+    },
+    {
+      "pid": "streak_break_table",
+      "name": "长龙/断龙后续命中率",
+      "category": "连断",
+      "definition": "连开L期结束后下一期全开命中率（Wilson CI，n≥5）",
+      "inputs": "presence 全期",
+      "method": "描述统计",
+      "target": "描述",
+      "baseline_desc": "不适用（描述性）",
+      "scope": "历史描述",
+      "source": "auto",
+      "segment": "descriptive",
+      "n": 0,
+      "hits": null,
+      "baseline": null,
+      "observed": null,
+      "diff": null,
+      "ci_lo": null,
+      "ci_hi": null,
+      "z": null,
+      "p_value": null,
+      "p_adjusted": null,
+      "ev_theory": null,
+      "holdout_obs": null,
+      "holdout_p": null,
+      "status": "descriptive",
+      "notes": "",
+      "extra": {
+        "鼠": [
+          {
+            "streak": 1,
+            "n": 34,
+            "next_hit": 0.0,
+            "ci": [
+              0.0,
+              0.10151790621961015
+            ]
+          },
+          {
+            "streak": 2,
+            "n": 9,
+            "next_hit": 0.0,
+            "ci": [
+              0.0,
+              0.2991527535509594
+            ]
+          },
+          {
+            "streak": 3,
+            "n": 8,
+            "next_hit": 0.0,
+            "ci": [
+              0.0,
+              0.3244156195108769
+            ]
+          }
+        ],
+        "牛": [
+          {
+            "streak": 1,
+            "n": 33,
+            "next_hit": 0.0,
+            "ci": [
+              0.0,
+              0.10427343003561192
+            ]
+          },
+          {
+            "streak": 2,
+            "n": 13,
+            "next_hit": 0.0,
+            "ci": [
+              0.0,
+              0.22810184305529166
+            ]
+          },
+          {
+            "streak": 3,
+            "n": 9,
+            "next_hit": 0.0,
+            "ci": [
+              0.0,
+              0.2991527535509594
+            ]
+          }
+        ],
+        "虎": [
+          {
+            "streak": 1,
+            "n": 39,
+            "next_hit": 0.0,
+            "ci": [
+              0.0,
+              0.08966985360023902
+            ]
+          },
+          {
+            "streak": 2,
+            "n": 7,
+            "next_hit": 0.0,
+            "ci": [
+              0.0,
+              0.35433884297520657
+            ]
+          },
+          {
+            "streak": 3,
+            "n": 6,
+            "next_hit": 0.0,
+            "ci": [
+              0.0,
+              0.3903430336530645
+            ]
+          }
+        ],
+        "兔": [
+          {
+            "streak": 1,
+            "n": 33,
+            "next_hit": 0.0,
+            "ci": [
+              0.0,
+              0.10427343003561192
+            ]
+          },
+          {
+            "streak": 2,
+            "n": 15,
+            "next_hit": 0.0,
+            "ci": [
+              0.0,
+              0.20388926630434784
+            ]
+          },
+          {
+            "streak": 3,
+            "n": 7,
+            "next_hit": 0.0,
+            "ci": [
+              0.0,
+              0.35433884297520657
+            ]
+          },
+          {
+            "streak": 4,
+            "n": 5,
+            "next_hit": 0.0,
+            "ci": [
+              0.0,
+              0.43449149475208104
+            ]
+          }
+        ],
+        "龙": [
+          {
+            "streak": 1,
+            "n": 28,
+            "next_hit": 0.0,
+            "ci": [
+              0.0,
+              0.12064720365810762
+            ]
+          },
+          {
+            "streak": 2,
+            "n": 20,
+            "next_hit": 0.0,
+            "ci": [
+              0.0,
+              0.16113012549493322
+            ]
+          },
+          {
+            "streak": 3,
+            "n": 11,
+            "next_hit": 0.0,
+            "ci": [
+              2.7755575615628914e-17,
+              0.2588400172488141
+            ]
+          }
+        ],
+        "蛇": [
+          {
+            "streak": 1,
+            "n": 27,
+            "next_hit": 0.0,
+            "ci": [
+              6.938893903907228e-18,
+              0.12455903714463581
+            ]
+          },
+          {
+            "streak": 2,
+            "n": 19,
+            "next_hit": 0.0,
+            "ci": [
+              0.0,
+              0.16818436536845052
+            ]
+          },
+          {
+            "streak": 3,
+            "n": 9,
+            "next_hit": 0.0,
+            "ci": [
+              0.0,
+              0.2991527535509594
+            ]
+          }
+        ],
+        "马": [
+          {
+            "streak": 1,
+            "n": 31,
+            "next_hit": 0.0,
+            "ci": [
+              0.0,
+              0.11025900073475385
+            ]
+          },
+          {
+            "streak": 2,
+            "n": 20,
+            "next_hit": 0.0,
+            "ci": [
+              0.0,
+              0.16113012549493322
+            ]
+          },
+          {
+            "streak": 3,
+            "n": 8,
+            "next_hit": 0.0,
+            "ci": [
+              0.0,
+              0.3244156195108769
+            ]
+          },
+          {
+            "streak": 4,
+            "n": 6,
+            "next_hit": 0.0,
+            "ci": [
+              0.0,
+              0.3903430336530645
+            ]
+          }
+        ],
+        "羊": [
+          {
+            "streak": 1,
+            "n": 31,
+            "next_hit": 0.0,
+            "ci": [
+              0.0,
+              0.11025900073475385
+            ]
+          },
+          {
+            "streak": 2,
+            "n": 11,
+            "next_hit": 0.0,
+            "ci": [
+              2.7755575615628914e-17,
+              0.2588400172488141
+            ]
+          },
+          {
+            "streak": 3,
+            "n": 11,
+            "next_hit": 0.0,
+            "ci": [
+              2.7755575615628914e-17,
+              0.2588400172488141
+            ]
+          }
+        ],
+        "猴": [
+          {
+            "streak": 1,
+            "n": 30,
+            "next_hit": 0.0,
+            "ci": [
+              0.0,
+              0.113517091390478
+            ]
+          },
+          {
+            "streak": 2,
+            "n": 17,
+            "next_hit": 0.0,
+            "ci": [
+              0.0,
+              0.18432366037156456
+            ]
+          },
+          {
+            "streak": 3,
+            "n": 6,
+            "next_hit": 0.0,
+            "ci": [
+              0.0,
+              0.3903430336530645
+            ]
+          },
+          {
+            "streak": 4,
+            "n": 7,
+            "next_hit": 0.0,
+            "ci": [
+              0.0,
+              0.35433884297520657
+            ]
+          }
+        ],
+        "鸡": [
+          {
+            "streak": 1,
+            "n": 36,
+            "next_hit": 0.0,
+            "ci": [
+              0.0,
+              0.09642183044857634
+            ]
+          },
+          {
+            "streak": 2,
+            "n": 13,
+            "next_hit": 0.0,
+            "ci": [
+              0.0,
+              0.22810184305529166
+            ]
+          },
+          {
+            "streak": 3,
+            "n": 11,
+            "next_hit": 0.0,
+            "ci": [
+              2.7755575615628914e-17,
+              0.2588400172488141
+            ]
+          }
+        ],
+        "狗": [
+          {
+            "streak": 1,
+            "n": 30,
+            "next_hit": 0.0,
+            "ci": [
+              0.0,
+              0.113517091390478
+            ]
+          },
+          {
+            "streak": 2,
+            "n": 15,
+            "next_hit": 0.0,
+            "ci": [
+              0.0,
+              0.20388926630434784
+            ]
+          },
+          {
+            "streak": 3,
+            "n": 10,
+            "next_hit": 0.0,
+            "ci": [
+              0.0,
+              0.2775401687666166
+            ]
+          }
+        ],
+        "猪": [
+          {
+            "streak": 1,
+            "n": 31,
+            "next_hit": 0.0,
+            "ci": [
+              0.0,
+              0.11025900073475385
+            ]
+          },
+          {
+            "streak": 2,
+            "n": 14,
+            "next_hit": 0.0,
+            "ci": [
+              0.0,
+              0.21531701192718142
+            ]
+          },
+          {
+            "streak": 3,
+            "n": 12,
+            "next_hit": 0.0,
+            "ci": [
+              0.0,
+              0.2425007574992425
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}
