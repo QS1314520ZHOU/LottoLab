@@ -1,5 +1,7 @@
 # LottoLab — 彩票历史数据分析与研究平台
 
+[![CI](https://github.com/QS1314520ZHOU/LottoLab/actions/workflows/ci.yml/badge.svg)](https://github.com/QS1314520ZHOU/LottoLab/actions/workflows/ci.yml)
+
 > **定位**：可安装、可测试、可复现、可审计的开源研究平台。
 > **不是**预测保证：截至 V1.1，两侧回测统一结论为 **“未发现可靠优势”**——
 > 无模型通过预定义的统计门槛，任何历史差异都不构成未来中奖概率的提升。

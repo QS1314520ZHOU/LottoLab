@@ -57,12 +57,16 @@ P2边界/黄金/资金 7 + P3审计 4 = **61**。
 | app backtest | exit 0 |
 | pytest（**已提交状态**） | **43 passed**（10.03s）——该克隆基于提交 `bc657fb`，不含尚未提交的 V1.1 测试；V1.1 合入后需复跑（见 §7） |
 
-## 5. CI（GitHub Actions）
+## 5. CI（GitHub Actions）——已回填
 
 - 工作流：`.github/workflows/ci.yml`（3.11+3.12 矩阵：安装→编译→ruff→密钥扫描→
   bb 数据准备→pytest）。
-- 状态：**待推送后经 API 确认**（本机直连 github 被墙，需 `http.proxy=socks5://127.0.0.1:10808`）。
-- 回填位置：见文末“CI 回填”节。
+- 首次运行 `38151141221`：**failure**（pytest 阶段——两个新测试依赖真实 ssq.db，
+  CI 无该库）；修复为自包含夹具（commit `8a6c4f1`）。
+- 修复后运行 `38151303387`：**completed / success**（3.11 与 3.12 两 job 全绿）。
+  URL: https://github.com/QS1314520ZHOU/LottoLab/actions/runs/38151303387
+- 结论：61 项测试在干净 Ubuntu、Python 3.11 与 3.12 下全部通过；
+  ruff/compile/密钥扫描通过。
 
 ## 6. 无法本地验证/阻塞项
 
@@ -86,7 +90,3 @@ python -m pytest tests/ -q     # 期望 61 passed（V1.1 起）
 - Description: `可安装、可测试、可复现、可审计的彩票历史数据分析与研究平台（双色球+BB）— 不承诺预测优势`
 - Topics: `lottery-analysis` `walk-forward-backtest` `statistical-audit` `python` `sqlite`
   `reproducible-research` `ssq`
-
-## CI 回填
-
-（推送 v1.1 后填写：run URL / 3.11、3.12 结果）

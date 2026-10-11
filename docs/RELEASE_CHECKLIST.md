@@ -29,8 +29,9 @@
 ## CI / 远端
 
 - [x] `.github/workflows/ci.yml`（3.11/3.12 矩阵、安装、编译、ruff、密钥扫描、pytest）
-- [ ] GitHub Actions 实际跑绿（推送后经 API 确认——见测试报告 §5）
-- [ ] 仓库 Description / Topics（需账号网页操作，见测试报告 §6 阻塞说明）
+- [x] GitHub Actions 实际跑绿：run `38151303387` = success（3.11+3.12 双绿；
+      首次失败已修复为自包含测试）
+- [ ] 仓库 Description / Topics（需账号网页操作，文案见测试报告 §8）
 
 ## 发布物
 
