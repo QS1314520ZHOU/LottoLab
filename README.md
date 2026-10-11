@@ -48,6 +48,18 @@ pip install -r requirements.txt
 cp .env.example .env        # 可选；无密钥也能跑，AI 功能需自备 MIMO_AI_KEY
 ```
 
+### 🖥️ 网页界面（推荐，免命令行）
+
+```powershell
+streamlit run web\app.py
+# 或：python -m web.app
+```
+
+浏览器打开 http://localhost:8510 —— 深色量化工作台，左侧导航、顶部切换
+**双色球 / BB六合彩** 双系统（数据、规则、赔率、回测完全隔离）。页面截图见
+`docs/screenshots/`（总览、号码推荐、历史开奖、BB总览、赔率规则、策略回测等）。
+设计与接口清单见 `docs/FRONTEND_IMPLEMENTATION_PLAN.md`。
+
 ### 双色球
 
 ```bash
@@ -75,9 +87,9 @@ python -m bb_analysis ui         # Streamlit 面板（模型/风险/数据时间
 ### 测试与质量门
 
 ```bash
-python -m pytest tests/ -q                       # 61 项（见 docs/V1_1_TEST_REPORT.md）
-python -m compileall app bb_analysis tests
-ruff check --select E9,F63,F7,F82,F821 app bb_analysis tests
+python -m pytest tests/ -q                 # 77 项（含 web 服务层 16 项）
+python -m compileall app bb_analysis web tests
+ruff check --select E9,F63,F7,F82,F821 app bb_analysis web tests
 ```
 
 ## 研究结论（V1.1，实测）
