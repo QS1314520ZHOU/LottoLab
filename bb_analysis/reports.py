@@ -126,6 +126,9 @@ def write_report(cfg: AppConfig | None = None) -> str:
                     f"  holdout {r['model']}: {r['rate']:.1%} vs "
                     f"{r['base']:.1%} q={r['q']:.3f} → "
                     f"{'显著' if r['q'] < 0.05 else '证据不足'}")
+        concl = bt.get("conclusion")
+        if concl:
+            lines.append(f"  结论: {concl}")
     lines += ["", "[资金风险]", rep["bankroll_text"], "",
               "[限制与红线]"]
     lines += [f"  * {w}" for w in rep["warnings"]]

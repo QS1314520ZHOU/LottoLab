@@ -34,6 +34,9 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--min-train", type=int, default=None)
     p.add_argument("--max-targets", type=int, default=0)
     p = sub.add_parser("report", help="生成分析报告（txt/json）")
+    p = sub.add_parser("tickets", help="固定预算票据与ROI对照（P1）")
+    p.add_argument("--budget", type=float, default=20.0,
+                   help="每期预算（元，默认20=10注）")
 
     args = parser.parse_args(argv)
     cfg = load_config()
@@ -87,6 +90,9 @@ def main(argv: list[str] | None = None) -> int:
     elif args.cmd == "report":
         from .reports import generate_report
         print(generate_report(cfg))
+    elif args.cmd == "tickets":
+        from .tickets import run_budget_study
+        print(run_budget_study(cfg, budget_yuan=args.budget))
     return 0
 
 

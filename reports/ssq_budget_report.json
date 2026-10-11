@@ -1,0 +1,53 @@
+{
+  "test_period": [
+    "2019101",
+    "2026116"
+  ],
+  "budget_per_period": 20.0,
+  "price": 2.0,
+  "prizes": {
+    "4plus1": 3000,
+    "3plus1": 200,
+    "2plus1": 10,
+    "1plus1": 5,
+    "0plus1": 5,
+    "note": "双色球固定奖：三等4+1=3000、四等3+1=200、五等2+1=10、六等1+1或0+1=5（官方公开规则）。一等奖(6+1)与二等奖(5+1)为浮动奖，本模拟按0保守计入，已在报告标注。"
+  },
+  "assumptions": [
+    "一/二等浮动奖按0保守计入",
+    "两策略同预算同测试期；随机策略固定种子",
+    "红球指标=单球命中率，蓝球指标=每注命中率，均非整注中奖率",
+    "模型策略只用 fv1（[:t]）特征",
+    "三等3000元主导方差：千期级ROI噪声可达±15%，策略差异主要来自大额奖时机"
+  ],
+  "model": {
+    "strategy": "model",
+    "budget_per_period": 20.0,
+    "periods": 1054,
+    "total_cost": 21080.0,
+    "total_return": 18570.0,
+    "net": -2510.0,
+    "roi": -0.11907020872865275,
+    "prize_period_rate": 0.6299810246679317,
+    "blue_hit_per_ticket": 0.06299810246679317,
+    "red_ball_hit_rate": 0.1812460468058191,
+    "big_prizes_ge_1000": 3,
+    "max_drawdown": 4745.0,
+    "longest_lose_streak": 8
+  },
+  "random": {
+    "strategy": "random(seed=42)",
+    "budget_per_period": 20.0,
+    "periods": 1054,
+    "total_cost": 21080.0,
+    "total_return": 25170.0,
+    "net": 4090.0,
+    "roi": 0.19402277039848198,
+    "prize_period_rate": 0.48956356736242884,
+    "blue_hit_per_ticket": 0.06366223908918406,
+    "red_ball_hit_rate": 0.1837919038583175,
+    "big_prizes_ge_1000": 5,
+    "max_drawdown": 4575.0,
+    "longest_lose_streak": 11
+  }
+}

@@ -36,7 +36,12 @@ def generate_report(cfg: SSQConfig) -> str:
         "feature_version": FEATURE_VERSION,
         "data": {k: data[k] for k in
                  ("total_rows", "valid_rows", "pending_conflicts",
+                  "by_source", "official_rows", "nonofficial_rows",
                   "issue_range", "per_year")},
+        "source_split_note": (
+            f"官方(cwl_official) {data.get('official_rows', 0)} 期；"
+            f"非官方备用(chart500_backup) {data.get('nonofficial_rows', 0)} 期"
+            "（2003–2012 补齐段）。两者不得混称“全部官方数据”。"),
         "patterns": patterns,
         "experiments": experiments,
         "backtests": [{"id": r["id"], "params": r["params"],
@@ -63,7 +68,10 @@ def generate_report(cfg: SSQConfig) -> str:
 
     lines = ["=" * 72, "双色球历史数据分析报告（研究用途）", "=" * 72,
              f"数据覆盖: {data['issue_range']} ｜ 有效 {data['valid_rows']} 期"
-             f" ｜ 冲突待核对 {data['pending_conflicts']}"]
+             f" ｜ 冲突待核对 {data['pending_conflicts']}",
+             f"来源分标: 官方 {data.get('official_rows', 0)} 期 ＋ "
+             f"非官方补齐 {data.get('nonofficial_rows', 0)} 期"
+             f"（by_source={data.get('by_source', {})}）"]
     bt = payload["backtests"][0] if payload["backtests"] else None
     if bt and bt["summary"]:
         m = bt["summary"]
@@ -80,10 +88,15 @@ def generate_report(cfg: SSQConfig) -> str:
                         f"CI=[{ens['top1_ci'][0]:.1%},{ens['top1_ci'][1]:.1%}]"
                         f" ｜ 公平基线 top1={m['_meta']['fair']['top1_hit']:.2%}")
     lines.append(f"已登记规律 {len(patterns)} 条，实验记录 {len(experiments)} 条")
-    lines += ["", "--- 限制与已知问题 ---",
-              "* 官方数据源仅覆盖2013+，2003-2012 来自非官方备用源（已标注）。",
-              "* robots.txt 对带查询串 URL 有 Disallow 规则（见 DATA_SOURCES.md）。",
-              "* 蓝球投票为 v1：红球侧只做概率模型与覆盖度评估，不投票。",
-              "* AI 助手为可选组件，失败会记录，不影响核心流程。"]
+    lines += ["", "--- 限制与已知问题 ---"]
+    concl = (bt or {}).get("summary", {}).get("_meta", {}).get("conclusion") \
+        if bt else None
+    if concl:
+        lines.append(f"* {concl}")
+    lines += [
+        "* 官方数据源仅覆盖2013+，2003-2012 来自非官方备用源（已标注）。",
+        "* robots.txt 对带查询串 URL 有 Disallow 规则（见 DATA_SOURCES.md）。",
+        "* 蓝球投票为 v1：红球侧只做概率模型与覆盖度评估，不投票。",
+        "* AI 助手为可选组件，失败会记录，不影响核心流程。"]
     txt_path.write_text("\n".join(lines), encoding="utf-8")
     return "\n".join(lines) + f"\n\n已导出: {txt_path}\n{json_path}"

@@ -34,11 +34,28 @@ class SSQConfig:
     # 规律挖掘
     min_support: int = 30
     alpha: float = 0.05
+    # 票据/奖金（来自 app.json ticket 节，官方公开规则）
+    ticket_price: float = field(
+        default_factory=lambda: float(
+            (_load_ticket()) .get("price_yuan", 2.0)))
+    prize_fixed: dict = field(
+        default_factory=lambda: dict(
+            (_load_ticket()).get("prize_fixed", {})))
 
     @property
     def first_prize_denominator(self) -> int:
         from math import comb
         return comb(self.red_pool, self.red_count) * (self.blue_pool ** self.blue_count)
+
+
+def _load_ticket() -> dict:
+    import json as _json
+    path = PROJECT_ROOT / "config" / "app.json"
+    try:
+        with open(path, encoding="utf-8") as f:
+            return _json.load(f).get("ticket", {})
+    except (OSError, ValueError):
+        return {}
 
 
 def load_config() -> SSQConfig:

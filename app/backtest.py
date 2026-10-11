@@ -199,6 +199,20 @@ def run_backtest(cfg: SSQConfig, min_train: Optional[int] = None,
                  "holdout 段只评估一次；若据此改参数需新的独立数据。"),
     }
 
+    # ---- 统一结论句：holdout 上 Brier 优于基线 且 top1 CI 下界 > 6.25% 才算证据 ----
+    ho = report.get("holdout") or {}
+    beat = [m for m in ("B", "C", "D", "ens")
+            if m in ho and ho[m]["brier"] < base_brier
+            and ho[m]["top1_ci"][0] > base_hit]
+    if beat:
+        report["_meta"]["conclusion"] = (
+            f"发现统计证据（holdout）：{beat} 同时优于基线 Brier 且 top1 "
+            f"CI 下界>6.25%；仍需前瞻性数据复验")
+    else:
+        report["_meta"]["conclusion"] = (
+            "未发现可靠优势：holdout 上无模型同时满足 Brier 优于公平基线"
+            "且 top1 命中 CI 下界超过 6.25%；报告不将任何差异表述为优势。")
+
     # ---- 落库 ----
     with db.connect(cfg.db_path) as conn:
         # 登记本次涉及的模型版本（可复现）
@@ -266,6 +280,5 @@ def _format(report: dict[str, Any]) -> str:
                 f"随机期望={r['red_rand_expect_6']:.3f} ｜ "
                 f"top12: B={r['red_B12']:.3f} C={r['red_C12']:.3f} "
                 f"随机期望={r['red_rand_expect_12']:.3f}")
-    lines.append("\n判读：ens/B/C 相对公平基线的差异若 CI 跨 0，"
-                 "视为无证据优于随机；holdout 只评一次。")
+    lines.append(f"\n[结论] {report['_meta'].get('conclusion', '未发现可靠优势')}")
     return "\n".join(lines)

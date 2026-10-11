@@ -51,7 +51,7 @@ class RuleConfig:
 
 @dataclass(frozen=True)
 class OddsConfig:
-    """赔率配置（总返还倍数，含本金），带版本与生效期。"""
+    """赔率配置（总返还倍数，含本金），带版本、生效期与证据标记。"""
 
     version: str
     effective_from: Optional[date]
@@ -61,6 +61,7 @@ class OddsConfig:
     current_year_from: Optional[date]
     current_year_to: Optional[date]
     combo_odds: dict[int, float]
+    evidence: dict[str, str] = field(default_factory=dict)
     warnings: tuple[str, ...] = field(default_factory=tuple)
 
     def single_odds(self, zodiac: str, on: Optional[date] = None) -> tuple[float, str]:
@@ -163,6 +164,10 @@ def load_config(config_dir: Optional[str | Path] = None) -> AppConfig:
             "OddsConfig: 当年生肖未配置（odds.json single.current_year.zodiac=null），"
             "全部单肖暂按 default 赔率结算，1.76 档未启用"
         )
+    combo_raw = odds_raw["combo"]
+    combo_evidence = str(combo_raw.get("evidence", ""))
+    if "待确认" in combo_evidence:
+        warnings.append("OddsConfig: 连肖赔率为 user_spec 待确认（无平台截图证据）")
     odds = OddsConfig(
         version=odds_raw["version"],
         effective_from=_parse_date(odds_raw.get("effective_from")),
@@ -171,7 +176,13 @@ def load_config(config_dir: Optional[str | Path] = None) -> AppConfig:
         current_year_odds=float(cy.get("odds", 1.76)),
         current_year_from=_parse_date(cy.get("effective_from")),
         current_year_to=_parse_date(cy.get("effective_to")),
-        combo_odds={int(k): float(v) for k, v in odds_raw["combo"].items()},
+        combo_odds={int(k): float(v) for k, v in combo_raw.items()
+                    if str(k).isdigit()},
+        evidence={
+            "single_default": str(odds_raw["single"].get("default_evidence", "")),
+            "current_year": str(cy.get("evidence", "")),
+            "combo": combo_evidence,
+        },
         warnings=tuple(warnings),
     )
 

@@ -7,8 +7,24 @@
   - `LICENSE`（整篇，MIT）
   - `history_sources.py`（整篇）
   - `ssq_db.py`（整篇）
-- 其余清单文件（`ssq_analyzer.py`、`quant_models.py`、`rigorous_backtest_v8.py`、`*_prediction_audit.py`、`auto_optimizer.py`、`single_ticket_ensemble.py` 等）：**仅依据 README 的架构描述审阅，未逐行读码**，结论一律按“未验证”处理，不复用其任何代码或成绩。
+- 其余清单文件（`ssq_analyzer.py`、`quant_models.py`、`rigorous_backtest_v8.py`、`auto_optimizer.py`、`single_ticket_ensemble.py` 等）：**仅依据 README 的架构描述审阅，未逐行读码**，结论一律按“未验证”处理，不复用其任何代码或成绩。
 - 未运行仓库附带的任何 EXE 或预编译程序；未导入其数据库/模型状态文件。
+
+### 1.1 深度审查补记（2026-10-11，代理可用后浅克隆成功）
+
+- 克隆：`--depth 1` 至本地 `reference/IOI-LottoLab`（被 .gitignore 排除，不上传），体积 77.6 MB。
+- 安全扫描（顶层 `*.py` 正则）：**无硬编码凭据**；发现 2 个 EXE
+  （`IOI AI 彩票量化预测系统*.exe`）——**未运行**；5 个自带 SQLite
+  （ssq.db / dlt.db / *_audit.db / lottery_weather.db）——**未迁移**；LICENSE=MIT ✓。
+- 读码级结论（升级原“README 级”）：
+  - `ssq_prediction_audit.py`：**锁定首次预测、同期内同算法已存在则返回 False、绝不覆盖**
+    （含 `generated_at NOT NULL`）→ 与本项目“预测冻结 append-only”同构，
+    决定维持 **ADAPT**（思想采纳，代码自写；本项目另有 data_cutoff < target 强约束）。
+  - `backtest_ssq.py`：`train = draws[:i]` / `draws[max(0, i - train_window):i]`
+    ——目标期 i 只用 i 之前数据，走期写法正确 → 决定维持 **REIMPLEMENT**
+    （同思路、不同实现；未复用其代码）。
+  - 仓库含 15+ 个 backtest_v*.py 迭代文件与调参痕迹 → 加固 **REJECT
+    auto_optimizer（自动调参）** 的理由：存在“同一测试段反复优化”的结构性风险。
 
 ## 1. 总体结论
 

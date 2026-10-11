@@ -41,7 +41,9 @@ def test_config_current_year_odds_configured_from_evidence():
     assert CFG.odds.single_odds("马", date(2026, 10, 11)) == (1.76, "ok")
     assert CFG.odds.single_odds("鼠", date(2026, 10, 11)) == (2.06, "ok")
     assert CFG.odds.single_odds("马", date(2027, 3, 1)) == (2.06, "ok")
-    assert not CFG.warnings
+    # 证据链：单肖档有截图证据；连肖档为待确认并产生告警
+    assert "screenshot" in CFG.odds.evidence["single_default"]
+    assert any("连肖赔率" in w and "待确认" in w for w in CFG.warnings)
 
 
 def test_config_unconfigured_current_year_warns():

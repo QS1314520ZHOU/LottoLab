@@ -93,11 +93,21 @@ def report_database(cfg: SSQConfig) -> dict[str, Any]:
     years: dict[str, int] = {}
     for d in ok:
         years[d["issue"][:4]] = years.get(d["issue"][:4], 0) + 1
+    by_source: dict[str, int] = {}
+    with db.connect(cfg.db_path) as conn:
+        for r in conn.execute(
+                "SELECT source, COUNT(*) c FROM draws GROUP BY source"):
+            by_source[r["source"]] = r["c"]
     return {
         "total_rows": len(draws),
         "valid_rows": len(ok),
         "pending_review": len(pending),
         "pending_conflicts": conflicts,
+        "by_source": by_source,
+        "official_rows": sum(c for s, c in by_source.items()
+                             if "official" in s),
+        "nonofficial_rows": sum(c for s, c in by_source.items()
+                                if "official" not in s),
         "issue_range": [ok[0]["issue"], ok[-1]["issue"]] if ok else None,
         "per_year": dict(sorted(years.items())),
         "recent_runs": runs,

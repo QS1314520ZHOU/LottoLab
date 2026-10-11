@@ -118,6 +118,9 @@ def run_backtest(cfg: AppConfig | None = None) -> str:
             st["y"].append(y)
         abstains[seg][1] += 1
         abstains[seg][0] += int(outcome.abstain)
+        # ens 逐期对齐记录（弃权=None），供分块稳定性用
+        accum[seg]["ens"].setdefault("period_hit", []).append(
+            None if outcome.pick is None else int(y[outcome.pick]))
         if seg == "val" or seg == "holdout":
             ens_probs.append(outcome.final)
             ens_y.append(y)
@@ -226,6 +229,33 @@ def run_backtest(cfg: AppConfig | None = None) -> str:
                    float(np.percentile(mc_hits, 97.5))],
           "seed": cfg.seed, "sims": 2000}
 
+    # ---- 跨时间窗口：holdout 三分块稳定性（前瞻性逐块评估）----
+    hold_list = list(segs["holdout"])
+    n_blk = 3
+    blocks = np.array_split(np.array(hold_list), n_blk)
+    holdout_blocks: dict[str, list[dict[str, Any]]] = {}
+    for m in ("A", "B", "C", "D", "ens"):
+        if m == "ens":
+            seq = accum["holdout"]["ens"].get("period_hit", [])
+        else:
+            seq = accum["holdout"][m]["hit"]
+        rows = []
+        offset = 0
+        for bi, blk in enumerate(blocks):
+            seg_hits = [h for h in seq[offset:offset + len(blk)]
+                        if h is not None]
+            offset += len(blk)
+            if not seg_hits:
+                continue
+            k, nn = int(sum(seg_hits)), len(seg_hits)
+            ph = k / nn
+            se = math.sqrt(max(1e-9, ph * (1 - ph) / nn))
+            rows.append({"block": bi + 1, "n": nn, "hit": ph,
+                         "abstain": len(blk) - nn if m == "ens" else 0,
+                         "ci": [max(0.0, ph - 1.96 * se),
+                                min(1.0, ph + 1.96 * se)]})
+        holdout_blocks[m] = rows
+
     # ---- 汇总 ----
     def seg_row(seg: str, m: str) -> Optional[dict]:
         st = accum[seg][m]
@@ -242,6 +272,18 @@ def run_backtest(cfg: AppConfig | None = None) -> str:
                 "abstain_rate": (abstains[seg][0] / abstains[seg][1]
                                  if abstains[seg][1] else float("nan"))}
 
+    # ---- 统一结论句（预先定义：评级达标 且 holdout 校正显著 才算有证据）----
+    beat = [m for m, r in (ratings or {}).items()
+            if isinstance(r, dict) and r.get("grade") == "beat_baseline"]
+    sig = [r["model"] for r in hold_tests
+           if r.get("q") is not None and r["q"] < 0.05]
+    if beat and sig:
+        conclusion = (f"发现统计证据：评级达标 {beat} 且 holdout 显著 {sig}"
+                      f"（仍需前瞻性数据复验，不构成未来优势承诺）")
+    else:
+        conclusion = ("未发现可靠优势：无模型达到 beat_baseline 评级"
+                      "或 holdout 多重校正后不显著；报告不将任何差异表述为优势。")
+
     summary: dict[str, Any] = {
         "meta": {"model_version": MODEL_VERSION, "seed": cfg.seed,
                  "warmup": WARMUP,
@@ -254,7 +296,9 @@ def run_backtest(cfg: AppConfig | None = None) -> str:
         "ratings": ratings,
         "calibration_ens_val": calib,
         "holdout_tests": hold_tests,
+        "holdout_blocks": holdout_blocks,
         "random_baseline_mc": mc,
+        "conclusion": conclusion,
         "patterns_validated_for_voting": [p for p, _ in validated],
     }
     for s in segs:
@@ -319,12 +363,21 @@ def _fmt(s: dict[str, Any], run_id: int) -> str:
     lines.append(f"\n[随机基线 MC] {mc['sims']}次 seed={mc['seed']} "
                  f"holdout 命中均值 {mc['mean']:.1%} "
                  f"CI95=[{mc['ci95'][0]:.1%},{mc['ci95'][1]:.1%}]")
+    blocks = s.get("holdout_blocks") or {}
+    if blocks:
+        lines.append("[holdout 跨时间窗口·三分块 top1命中]")
+        for m, rows in blocks.items():
+            if not rows:
+                continue
+            cells = " | ".join(
+                f"块{r['block']}:{r['hit']:.1%}[{r['ci'][0]:.0%},"
+                f"{r['ci'][1]:.0%}]" for r in rows)
+            lines.append(f"  {m:<5} {cells}")
     cal = s.get("calibration_ens_val") or {}
     if cal:
         lines.append(f"[校准 · ens@val] ECE={cal['ece']:.4f} "
                      f"分箱数={len(cal['bins'])}")
     lines.append(f"\n[投票权] validated 规律: "
                  f"{s['patterns_validated_for_voting'] or '无（全部未过双门槛，规律不投票）'}")
-    lines.append("结论规则：评级未 beat_baseline 或 holdout q≥0.05 → 证据不足，"
-                 "不得宣称优势。")
+    lines.append(f"\n[结论] {s.get('conclusion', '未发现可靠优势')}")
     return "\n".join(lines)

@@ -19,6 +19,18 @@
     "max_combos_per_k": 0
   },
   "prior_strength": 20.0,
+  "ticket": {
+    "price_yuan": 2.0,
+    "price_note": "双色球单注零售价2元（官方公开规则）",
+    "prize_fixed": {
+      "4plus1": 3000,
+      "3plus1": 200,
+      "2plus1": 10,
+      "1plus1": 5,
+      "0plus1": 5,
+      "note": "双色球固定奖：三等4+1=3000、四等3+1=200、五等2+1=10、六等1+1或0+1=5（官方公开规则）。一等奖(6+1)与二等奖(5+1)为浮动奖，本模拟按0保守计入，已在报告标注。"
+    }
+  },
   "bankroll": {
     "initial_balance": 200.0,
     "base_stake": 5.0,
