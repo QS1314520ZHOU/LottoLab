@@ -28,10 +28,10 @@ jobs:
           pip install ruff
 
       - name: Compile check（语法/导入级编译）
-        run: python -m compileall -q app bb_analysis bb_v9.py bb_sync.py tests
+        run: python -m compileall -q app bb_analysis web bb_v9.py bb_sync.py tests
 
       - name: Static check（仅错误类规则，不设风格门槛）
-        run: ruff check --select E9,F63,F7,F82,F821 app bb_analysis tests
+        run: ruff check --select E9,F63,F7,F82,F821 app bb_analysis web tests
 
       - name: Secret scan（历史与工作区不得出现疑似密钥）
         run: |
